@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oh My Pancake! — Cardápio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Nunito:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream: #FFF8E1;
+      --yellow-light: #FFF3C4;
+      --gold: #C8860A;
+      --gold-light: #E8A020;
+      --gold-bright: #F5B800;
+      --brown: #7B4F1E;
+      --brown-dark: #4A2E0A;
+      --white: #FFFDF5;
+      --fit: #6B9E5E;
+      --fit-light: #EEF5EC;
+      --shadow: rgba(74,46,10,0.12);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--cream); font-family:'Nunito',sans-serif; color:var(--brown-dark); overflow-x:hidden; }
+
+    /* HERO */
+    .hero { background:var(--brown-dark); padding:48px 24px 40px; text-align:center; position:relative; overflow:hidden; }
+    .hero::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%,rgba(245,184,0,0.18) 0%,transparent 65%); pointer-events:none; }
+    .hero-dots { position:absolute; inset:0; background-image:radial-gradient(circle,rgba(245,184,0,0.08) 1px,transparent 1px); background-size:28px 28px; pointer-events:none; }
+    .logo-icon { font-size:64px; line-height:1; display:block; opacity:0; animation:popIn .7s cubic-bezier(.34,1.56,.64,1) forwards .2s; }
+    .brand-name { font-family:'Fredoka',sans-serif; font-weight:700; font-size:clamp(38px,9vw,68px); color:var(--gold-bright); line-height:1; text-shadow:0 2px 20px rgba(245,184,0,.3); opacity:0; animation:popIn .7s cubic-bezier(.34,1.56,.64,1) forwards .4s; }
+    .brand-sub { font-size:12px; font-weight:400; color:rgba(255,248,225,.6); letter-spacing:3px; text-transform:uppercase; margin-top:6px; opacity:0; animation:fadeUp .6s ease forwards .7s; }
+    .hero-pills { display:flex; justify-content:center; gap:8px; margin-top:20px; flex-wrap:wrap; opacity:0; animation:fadeUp .6s ease forwards .9s; }
+    .pill { background:rgba(245,184,0,.15); border:1px solid rgba(245,184,0,.3); color:var(--gold-bright); font-size:11px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; padding:5px 14px; border-radius:999px; }
+
+    /* NAV */
+    .nav { background:var(--white); border-bottom:2px solid var(--yellow-light); padding:0 12px; display:flex; justify-content:center; gap:2px; flex-wrap:wrap; position:sticky; top:0; z-index:100; box-shadow:0 2px 12px var(--shadow); }
+    .nav-btn { font-family:'Fredoka',sans-serif; font-size:14px; font-weight:500; color:var(--brown); background:transparent; border:none; padding:13px 14px; cursor:pointer; position:relative; transition:color .2s; }
+    .nav-btn::after { content:''; position:absolute; bottom:0; left:50%; right:50%; height:3px; background:var(--gold-bright); border-radius:3px 3px 0 0; transition:left .25s,right .25s; }
+    .nav-btn:hover, .nav-btn.active { color:var(--gold); }
+    .nav-btn.active::after { left:6px; right:6px; }
+
+    /* SECTIONS */
+    .section { max-width:860px; margin:0 auto; padding:48px 20px 60px; display:none; }
+    .section.active { display:block; }
+
+    /* SECTION HEADER */
+    .section-header { text-align:center; margin-bottom:40px; }
+    .section-eyebrow { font-size:11px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--gold); margin-bottom:10px; }
+    .section-title { font-family:'Fredoka',sans-serif; font-size:clamp(32px,7vw,52px); font-weight:600; color:var(--brown-dark); line-height:1.1; }
+    .section-title span { color:var(--gold); }
+    .section-desc { font-size:14px; color:var(--brown); margin-top:10px; line-height:1.6; max-width:500px; margin-left:auto; margin-right:auto; }
+
+    /* CATEGORY LABEL */
+    .cat-label { display:flex; align-items:center; gap:12px; margin:36px 0 14px; }
+    .cat-label-text { font-family:'Fredoka',sans-serif; font-size:17px; font-weight:600; color:var(--gold); white-space:nowrap; }
+    .cat-label-line { flex:1; height:2px; background:var(--yellow-light); border-radius:2px; }
+    .cat-note { font-size:12px; color:var(--brown); margin-bottom:16px; line-height:1.5; }
+
+    /* MENU CARDS */
+    .menu-grid { display:grid; gap:10px; }
+    .menu-card { background:var(--white); border-radius:14px; padding:18px 20px; display:flex; justify-content:space-between; align-items:center; gap:14px; box-shadow:0 2px 8px var(--shadow); border:2px solid transparent; transition:all .22s ease; position:relative; overflow:hidden; }
+    .menu-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--gold-bright); border-radius:4px 0 0 4px; transform:scaleY(0); transition:transform .22s; }
+    .menu-card:hover { border-color:var(--gold-bright); transform:translateY(-2px); box-shadow:0 8px 24px var(--shadow); }
+    .menu-card:hover::before { transform:scaleY(1); }
+    .menu-card.fit-card { background:var(--fit-light); }
+    .menu-card.fit-card::before { background:var(--fit); }
+    .menu-card.featured { background:linear-gradient(135deg,#FFF8E1 0%,#FFF3C4 100%); border-color:var(--gold-bright); }
+    .menu-card.featured::before { transform:scaleY(1); }
+    .card-left { flex:1; }
+    .card-name { font-family:'Fredoka',sans-serif; font-size:18px; font-weight:600; color:var(--brown-dark); margin-bottom:3px; display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+    .card-desc { font-size:12px; color:var(--brown); line-height:1.5; }
+    .card-right { text-align:right; flex-shrink:0; }
+    .card-price { font-family:'Fredoka',sans-serif; font-size:24px; font-weight:600; color:var(--gold); line-height:1; }
+    .card-price-label { font-size:10px; color:var(--brown); letter-spacing:1px; text-transform:uppercase; margin-top:2px; }
+
+    /* BADGES */
+    .badge { font-family:'Nunito',sans-serif; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:3px 8px; border-radius:999px; }
+    .badge-fit { background:var(--fit); color:white; }
+    .badge-new { background:var(--gold-bright); color:var(--brown-dark); }
+    .badge-pop { background:var(--brown-dark); color:var(--gold-bright); }
+
+    /* FORMAT CARD (Cup / Espetinho visual) */
+    .format-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin-bottom:32px; }
+    .format-card { background:var(--white); border-radius:16px; padding:24px 20px; text-align:center; box-shadow:0 2px 10px var(--shadow); border:2px solid var(--yellow-light); transition:all .22s; }
+    .format-card:hover { border-color:var(--gold-bright); transform:translateY(-3px); }
+    .format-card .fc-icon { font-size:44px; margin-bottom:10px; }
+    .format-card .fc-name { font-family:'Fredoka',sans-serif; font-size:20px; font-weight:600; color:var(--brown-dark); margin-bottom:6px; }
+    .format-card .fc-desc { font-size:12px; color:var(--brown); line-height:1.5; }
+
+    /* BOX CARDS */
+    .box-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; }
+    .box-card { background:var(--white); border-radius:20px; padding:28px 22px; box-shadow:0 4px 16px var(--shadow); border:2px solid transparent; transition:all .25s; position:relative; overflow:hidden; }
+    .box-card::after { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:var(--gold-bright); border-radius:20px 20px 0 0; }
+    .box-card.party::after { background:linear-gradient(90deg,var(--gold-bright),var(--gold),var(--gold-bright)); }
+    .box-card:hover { transform:translateY(-4px); border-color:var(--gold-bright); box-shadow:0 12px 32px var(--shadow); }
+    .box-icon { font-size:36px; margin-bottom:12px; }
+    .box-name { font-family:'Fredoka',sans-serif; font-size:22px; font-weight:600; color:var(--brown-dark); margin-bottom:6px; }
+    .box-includes { font-size:12px; color:var(--brown); line-height:1.8; margin-bottom:16px; }
+    .box-includes span { display:block; padding-left:16px; position:relative; }
+    .box-includes span::before { content:'✓'; position:absolute; left:0; color:var(--gold); font-weight:700; }
+    .box-price { font-family:'Fredoka',sans-serif; font-size:32px; font-weight:700; color:var(--gold); }
+    .box-price-note { font-size:11px; color:var(--brown); margin-top:2px; }
+
+    /* CHIPS */
+    .chips-grid { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+    .chip { background:var(--white); border:2px solid var(--yellow-light); border-radius:999px; padding:9px 18px; font-family:'Fredoka',sans-serif; font-size:15px; color:var(--brown-dark); display:flex; align-items:center; gap:7px; box-shadow:0 2px 6px var(--shadow); transition:all .2s; }
+    .chip:hover { border-color:var(--gold-bright); transform:scale(1.04); }
+    .chip .chip-price { font-weight:700; color:var(--gold); }
+    .chip.calda { background:linear-gradient(135deg,var(--yellow-light),var(--white)); }
+
+    /* INFO BAR */
+    .info-bar { background:var(--brown-dark); border-radius:16px; padding:20px 24px; margin-top:32px; display:flex; flex-wrap:wrap; gap:16px; align-items:center; justify-content:space-around; }
+    .info-item { display:flex; align-items:center; gap:10px; font-size:12px; color:rgba(255,248,225,.8); }
+    .info-item strong { color:var(--gold-bright); font-family:'Fredoka',sans-serif; font-size:14px; display:block; }
+
+    /* MONTE CARD */
+    .monte-card { background:linear-gradient(135deg,var(--brown-dark) 0%,#6B3A14 100%); border-radius:24px; padding:36px 32px; color:white; position:relative; overflow:hidden; }
+    .monte-card::before { content:''; position:absolute; top:-40px; right:-40px; width:200px; height:200px; background:radial-gradient(circle,rgba(245,184,0,.2) 0%,transparent 70%); }
+    .monte-card::after { content:'🥞'; position:absolute; right:24px; bottom:-8px; font-size:80px; opacity:.12; }
+    .monte-title { font-family:'Fredoka',sans-serif; font-size:26px; font-weight:600; color:var(--gold-bright); margin-bottom:8px; }
+    .monte-desc { font-size:13px; color:rgba(255,248,225,.8); margin-bottom:20px; line-height:1.5; max-width:380px; }
+    .monte-includes { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-bottom:24px; }
+    .monte-item { background:rgba(255,248,225,.08); border:1px solid rgba(245,184,0,.2); border-radius:10px; padding:10px 14px; font-size:12px; color:rgba(255,248,225,.9); }
+    .monte-item strong { display:block; color:var(--gold-bright); font-family:'Fredoka',sans-serif; font-size:14px; margin-bottom:2px; }
+    .monte-price { font-family:'Fredoka',sans-serif; font-size:52px; font-weight:700; color:var(--gold-bright); line-height:1; }
+    .monte-price-note { font-size:12px; color:rgba(255,248,225,.6); margin-top:4px; }
+
+    /* STEPS */
+    .steps { display:grid; gap:12px; }
+    .step { background:var(--white); border-radius:16px; padding:22px; box-shadow:0 2px 8px var(--shadow); display:flex; gap:18px; align-items:flex-start; }
+    .step-num { background:var(--gold-bright); color:var(--brown-dark); font-family:'Fredoka',sans-serif; font-size:20px; font-weight:700; width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .step-title { font-family:'Fredoka',sans-serif; font-size:17px; color:var(--brown-dark); margin-bottom:4px; }
+    .step-desc { font-size:13px; color:var(--brown); line-height:1.5; }
+
+    /* CTA */
+    .cta-block { background:linear-gradient(135deg,var(--brown-dark),#6B3A14); border-radius:20px; padding:28px; margin-top:24px; text-align:center; }
+    .cta-block h3 { font-family:'Fredoka',sans-serif; font-size:24px; color:var(--gold-bright); margin-bottom:8px; }
+    .cta-block p { font-size:13px; color:rgba(255,248,225,.8); margin-bottom:16px; }
+    .cta-btn { display:inline-block; background:var(--gold-bright); color:var(--brown-dark); font-family:'Fredoka',sans-serif; font-size:16px; font-weight:600; padding:12px 28px; border-radius:999px; }
+
+    /* FOOTER */
+    .footer { background:var(--brown-dark); text-align:center; padding:40px 24px; }
+    .footer-logo { font-family:'Fredoka',sans-serif; font-size:34px; font-weight:700; color:var(--gold-bright); }
+    .footer-handle { font-size:13px; color:rgba(255,248,225,.55); margin-top:6px; letter-spacing:1px; }
+    .footer-tag { font-size:11px; color:rgba(255,248,225,.35); margin-top:4px; letter-spacing:2px; text-transform:uppercase; }
+
+    @keyframes popIn { from{opacity:0;transform:scale(.8) translateY(10px)} to{opacity:1;transform:scale(1) translateY(0)} }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+    @media(max-width:600px){
+      .hero{padding:36px 18px 28px}
+      .nav-btn{font-size:12px;padding:11px 10px}
+      .menu-card{flex-wrap:wrap}
+      .card-right{width:100%;text-align:left}
+      .monte-card{padding:24px 18px}
+      .monte-price{font-size:40px}
+      .box-grid{grid-template-columns:1fr}
+    }
+    .whatsapp-float {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 9999;
+}
+
+.whatsapp-float img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
+
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-dots"></div>
+  <span class="logo-icon">🥞</span>
+  <div class="brand-name">Oh My Pancake!</div>
+  <div class="brand-sub">mini american pancakes</div>
+  <div class="hero-pills">
+    <span class="pill">☀️ Delivery</span>
+    <span class="pill">🛍️ Retirada</span>
+    <span class="pill">💚 Opção Fit</span>
+    <span class="pill">🎉 Encomendas</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-btn active" onclick="show('sabores',this)">🍽️ Sabores</button>
+  <button class="nav-btn" onclick="show('cup',this)">🥤 Cup</button>
+  <button class="nav-btn" onclick="show('espetinho',this)">🍡 Espetinho</button>
+  <button class="nav-btn" onclick="show('box',this)">📦 Box</button>
+  <button class="nav-btn" onclick="show('monte',this)">✨ Monte</button>
+  <button class="nav-btn" onclick="show('pedidos',this)">📲 Pedidos</button>
+</nav>
+
+
+<!-- ══════════ SABORES ══════════ -->
+<div class="section active" id="sabores">
+  <div class="section-header">
+    <div class="section-eyebrow">Válido para Cup, Espetinho e Box</div>
+    <h2 class="section-title">Combinações <span>Irresistíveis</span> 🤤</h2>
+    <p class="section-desc">Todas as combinações abaixo estão disponíveis em qualquer formato — Cup, Espetinho ou Box. Escolha o seu favorito!</p>
+  </div>
+
+  <!-- CLÁSSICOS -->
+  <div class="cat-label">
+    <span>🥞</span>
+    <span class="cat-label-text">Clássicos</span>
+    <div class="cat-label-line"></div>
+  </div>
+  <div class="menu-grid">
+    <div class="menu-card featured">
+      <div class="card-left">
+        <div class="card-name">Nuvem de Nutella <span class="badge badge-pop">🔥 Top</span></div>
+        <div class="card-desc">Nutella generosa · Leite Ninho salpicado</div>
+      </div>
+    </div>
+    <div class="menu-card">
+      <div class="card-left">
+        <div class="card-name">Oh My Berry! 🍓</div>
+        <div class="card-desc">Geleia artesanal de morango · Pedaços de morango fresco</div>
+      </div>
+    </div>
+    <div class="menu-card">
+      <div class="card-left">
+        <div class="card-name">Nutella + Banana 🍌</div>
+        <div class="card-desc">Nutella · Banana fatiada</div>
+      </div>
+    </div>
+    <div class="menu-card">
+      <div class="card-left">
+        <div class="card-name">Beijinho Americano 🥥</div>
+        <div class="card-desc">Doce de leite cremoso · Coco ralado</div>
+      </div>
+    </div>
+    <div class="menu-card">
+      <div class="card-left">
+        <div class="card-name">A Clássica 🍯</div>
+        <div class="card-desc">Mel puro · Manteiga derretida · Frutas vermelhas frescas</div>
+      </div>
+    </div>
+    <div class="menu-card">
+      <div class="card-left">
+        <div class="card-name">Chocolate + Banana 🍫</div>
+        <div class="card-desc">Cobertura de chocolate · Banana fatiada · Granulado crocante</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DARK & WHITE -->
+  <div class="cat-label" style="margin-top:36px;">
+    <span>🍫</span>
+    <span class="cat-label-text">Dark & White</span>
+    <div class="cat-label-line"></div>
+  </div>
+  <div class="menu-grid">
+    <div class="menu-card">
+      <div class="card-left">
+        <div class="card-name">White Kiss 🍓</div>
+        <div class="card-desc">Chocolate branco derretido · Morangos frescos fatiados</div>
+      </div>
+    </div>
+    <div class="menu-card">
+      <div class="card-left">
+        <div class="card-name">Dark Berry 🍫🍓 <!--<span class="badge badge-new">Novo</span>--></div>
+        <div class="card-desc">Chocolate amargo intenso · Morangos frescos</div>
+      </div>
+    </div>
+    <div class="menu-card">
+      <div class="card-left">
+        <div class="card-name">Dark Banana Split 🍫🍌</div>
+        <div class="card-desc">Chocolate amargo · Banana fatiada · Granulado crocante</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIT -->
+  <div class="cat-label" style="margin-top:36px;">
+    <span>💚</span>
+    <span class="cat-label-text" style="color:var(--fit)">Fit — Sem glúten & sem lactose</span>
+    <div class="cat-label-line"></div>
+  </div>
+  <p class="cat-note">Massa de farinha de amêndoas · Sem glúten · Sem lactose</p>
+  <div class="menu-grid">
+    <div class="menu-card fit-card">
+      <div class="card-left">
+        <div class="card-name">Fit & Berries 🍓 <span class="badge badge-fit">Fit</span></div>
+        <div class="card-desc">Mel puro · Morangos frescos · Mix de nuts</div>
+      </div>
+    </div>
+    <div class="menu-card fit-card">
+      <div class="card-left">
+        <div class="card-name">Power Fit 💪 <span class="badge badge-fit">Fit</span></div>
+        <div class="card-desc">Pasta de amendoim · Banana fatiada · Chia · Fio de mel</div>
+      </div>
+    </div>
+    <div class="menu-card fit-card">
+      <div class="card-left">
+        <div class="card-name">Doce de Leite + Granola <span class="badge badge-fit">Fit</span></div>
+        <div class="card-desc">Doce de leite · Granola crocante · Massa leve de amêndoas</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--yellow-light);border-radius:14px;padding:16px 20px;margin-top:28px;border:2px solid rgba(200,134,10,.2);">
+    <p style="font-family:'Fredoka',sans-serif;font-size:15px;color:var(--brown-dark);">💡 Todos os sabores disponíveis em Cup, Espetinho e Box!</p>
+    <p style="font-size:12px;color:var(--brown);margin-top:4px;">Escolha seu sabor e depois o formato que preferir. Personalize com caldas e toppings à vontade. 🤤</p>
+  </div>
+</div>
+
+
+<!-- ══════════ CUP ══════════ -->
+<div class="section" id="cup">
+  <div class="section-header">
+    <h2 class="section-title">The <span>Cup</span> 🥤</h2>
+    <p class="section-desc">Mini panquecas em camadas no copo transparente de 440ml. Você vê tudo antes de dar a primeira garfada.</p>
+  </div>
+
+  <div class="format-cards">
+    <div class="format-card">
+      <div class="fc-icon">🥤</div>
+      <div class="fc-name">Cup Tradicional</div>
+      <div class="fc-desc">Copo transparente 440ml · Mini panquecas em camadas · Calda + topping à escolha</div>
+    </div>
+    <div class="format-card" style="border-color:rgba(107,158,94,.3);background:var(--fit-light)">
+      <div class="fc-icon">💚</div>
+      <div class="fc-name">Cup Fit</div>
+      <div class="fc-desc">Massa de farinha de amêndoas · Sem glúten & sem lactose · Mesma delícia, escolha consciente</div>
+    </div>
+  </div>
+
+  <div class="cat-label">
+    <span>💰</span>
+    <span class="cat-label-text">Preços</span>
+    <div class="cat-label-line"></div>
+  </div>
+  <div class="menu-grid">
+    <div class="menu-card featured">
+      <div class="card-left">
+        <div class="card-name">Cup Tradicional</div>
+        <div class="card-desc">Uma Calda + Um topping incluso</div>
+      </div>
+      <div class="card-right">
+        <div class="card-price">a partir de R$ 24,90</div>
+        <div class="card-price-label">por copo</div>
+      </div>
+    </div>
+    <div class="menu-card fit-card">
+      <div class="card-left">
+        <div class="card-name">Cup Fit <span class="badge badge-fit">Fit</span></div>
+        <div class="card-desc">Uma Calda + Um topping incluso</div>
+      </div>
+      <div class="card-right">
+        <div class="card-price" style="color:var(--fit)">a partir de R$ 28,90</div>
+        <div class="card-price-label">por copo</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--yellow-light);border-radius:14px;padding:16px 20px;margin-top:20px;border:2px solid rgba(200,134,10,.2);">
+    <p style="font-size:12px;color:var(--brown);line-height:1.6;">👉 Consulte e escolha suas caldas e toppings na aba<button class="nav-btn" onclick="show('monte',this)"><strong>Monte o seu</strong></button>.</p>
+  </div>
+</div>
+
+
+<!-- ══════════ ESPETINHO ══════════ -->
+<div class="section" id="espetinho">
+  <div class="section-header">
+    <h2 class="section-title">The <span>Espetinho</span> 🍡</h2>
+    <p class="section-desc">Mini panquecas empilhadas no palito, mergulhadas em calda e cobertura de toppings.</p>
+  </div>
+
+  <div class="format-cards">
+    <div class="format-card">
+      <div class="fc-icon">🍡</div>
+      <div class="fc-name">Simples</div>
+      <div class="fc-desc">1 palito · 8 minis empilhadas · Calda à parte para manter a crocância</div>
+    </div>
+    <div class="format-card">
+      <div class="fc-icon">✌️</div>
+      <div class="fc-name">Duo</div>
+      <div class="fc-desc">2 palitos · 16 minis empilhadas · Calda à parte para manter a crocância</div>
+    </div>
+  </div>
+
+  <div class="cat-label">
+    <span>💰</span>
+    <span class="cat-label-text">Preços</span>
+    <div class="cat-label-line"></div>
+  </div>
+  <div class="menu-grid">
+    <div class="menu-card featured">
+      <div class="card-left">
+        <div class="card-name">Espetinho Simples</div>
+        <div class="card-desc">1 palito · 8 minis · 1 potinho · toppings + calda à parte para manter a crocância </div>
+      </div>
+      <div class="card-right">
+        <div class="card-price">a partir de R$ 20,90</div>
+        <div class="card-price-label">por espetinho</div>
+      </div>
+    </div>
+    <div class="menu-card featured">
+      <div class="card-left">
+        <div class="card-name">Espetinho Duo ✌️ <span class="badge badge-pop">Duo</span></div>
+        <div class="card-desc">2 palitos · 16 minis · 1 potinho · toppings + calda à parte para manter a crocância</div>
+      </div>
+      <div class="card-right">
+        <div class="card-price">R$ 35,90</div>
+        <div class="card-price-label">os dois</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--yellow-light);border-radius:14px;padding:16px 20px;margin-top:20px;border:2px solid rgba(200,134,10,.2);">
+    <p style="font-size:12px;color:var(--brown);line-height:1.6;">⚠️ <strong>Calda sempre servida à parte</strong> para garantir que as panquecas cheguem crocantes. Despeje na hora de comer para a melhor experiência! 🤤</p>
+  </div>
+</div>
+
+
+<!-- ══════════ BOX ══════════ -->
+<div class="section" id="box">
+  <div class="section-header">
+    <h2 class="section-title">Nossas <span>Boxes</span> 📦</h2>
+    <p class="section-desc">Do lanche individual à festa em família. Todos os sabores disponíveis em qualquer box.</p>
+  </div>
+
+  <div class="box-grid">
+    <div class="box-card">
+      <div class="box-icon">🥡</div>
+      <div class="box-name">Individual</div>
+      <div class="box-includes">
+        <span>12 mini panquecas</span>
+        <span>1 calda à escolha</span>
+        <span>1 topping à escolha</span>
+      </div>
+      <div class="box-price">R$ 23,90</div>
+      <div class="box-price-note">perfeita para uma pessoa</div>
+    </div>
+    <div class="box-card">
+      <div class="box-icon">👫</div>
+      <div class="box-name">Compartilhada</div>
+      <div class="box-includes">
+        <span>25 mini panquecas</span>
+        <span>2 caldas à escolha</span>
+        <span>2 toppings à escolha</span>
+      </div>
+      <div class="box-price">R$ 39,90</div>
+      <div class="box-price-note">ideal para dividir</div>
+    </div>
+    <div class="box-card party">
+      <div class="box-icon">🎉</div>
+      <div class="box-name">Party</div>
+      <div class="box-includes">
+        <span>50 mini panquecas</span>
+        <span>Caldas variadas em potinhos</span>
+        <span>Toppings sortidos</span>
+      </div>
+      <div class="box-price">R$ 82,90</div>
+      <div class="box-price-note">família, festas & eventos</div>
+    </div>
+  </div>
+
+  <div style="background:var(--yellow-light);border-radius:14px;padding:16px 20px;margin-top:24px;border:2px solid rgba(200,134,10,.2);">
+    <p style="font-family:'Fredoka',sans-serif;font-size:15px;color:var(--brown-dark);">💚 Boxes também disponíveis com massa Fit!</p>
+    <p style="font-size:12px;color:var(--brown);margin-top:4px;">Peça sua box com massa de farinha de amêndoas (sem glúten e sem lactose) com preço adicional. INFORME NA HORA DO PEDIDO</p>
+  </div>
+</div>
+
+
+<!-- ══════════ MONTE ══════════ -->
+<div class="section" id="monte">
+  <div class="section-header">
+    <div class="section-eyebrow">Personalize do seu jeito</div>
+    <h2 class="section-title">Caldas & <span>Toppings</span> ✨</h2>
+    <p class="section-desc">Todas as caldas e toppings disponíveis para qualquer formato — Cup, Espetinho ou Box.</p>
+  </div>
+
+  <!-- MONTE SEU COPO -->
+  <div class="monte-card" style="margin-bottom:36px;">
+    <div class="monte-title">Monte seu My pancake 🎨</div>
+    <div class="monte-desc">Escolha o seu jeitinho Oh My Pancake!</div>
+    <div class="monte-includes">
+      <div class="monte-item"><strong>🥞 The Cup <p>🥞 The Box <p>🥞 The Stick </strong>Massa tradicional artesanal</div>
+      <div class="monte-item"><strong>🍯 1 Calda Generosa</strong>Qualquer calda do cardápio</div>
+      <div class="monte-item"><strong>✨ 2 Toppings</strong>Qualquer topping do cardápio</div>
+    </div>
+    <div class="monte-price">R$ 20,90</div>
+    <div class="monte-price-note">sua imaginação é o limite 🤤</div>
+  </div>
+
+  <!-- CALDAS -->
+  <div class="cat-label">
+    <span>🍯</span>
+    <span class="cat-label-text">Caldas disponíveis</span>
+    <div class="cat-label-line"></div>
+  </div>
+  <p class="cat-note">Escolha uma ou mais caldas para acompanhar seu pedido</p>
+  <div class="chips-grid">
+    <div class="chip calda">🍫 Nutella</div>
+    <div class="chip calda">🥛 Doce de Leite</div>
+    <div class="chip calda">🍯 Mel</div>
+    <div class="chip calda">🤎 Chocolate Preto</div>
+    <div class="chip calda">🤍 Chocolate Branco</div>
+    <div class="chip calda">🥜 Pasta de Amendoim</div>
+    <div class="chip calda">🍼 Leite Condensado</div>
+  </div>
+
+  <!-- TOPPINGS -->
+  <div class="cat-label" style="margin-top:36px;">
+    <span>🎉</span>
+    <span class="cat-label-text">Toppings disponíveis</span>
+    <div class="cat-label-line"></div>
+  </div>
+  <p class="cat-note">Finalize com o topping que você mais ama</p>
+  <div class="chips-grid">
+    <div class="chip">🥛 Leite Ninho</div>
+    <div class="chip">🍬 M&Ms</div>
+    <div class="chip">🥜 Amendoim granulado</div>
+    <div class="chip">🌾 Granola</div>
+    <div class="chip">🍫 Granulado</div>
+    <div class="chip">🥥 Coco ralado</div>
+    <div class="chip">🍓 Morango fatiado</div>
+    <div class="chip">🍌 Banana fatiada</div>
+    <div class="chip">🍪 Oreo triturado</div>
+    <div class="chip">🍭 Stikadinho</div>
+    <div class="chip">🍫 Kit Kat triturado</div>
+    <div class="chip">🤎 Chocolate Preto</div>
+    <div class="chip">🤍 Chocolate Branco</div>
+    <div class="chip">🍦 Chantilly</div>
+  </div>
+
+  <!-- ADICIONAIS -->
+  <div class="cat-label" style="margin-top:36px;">
+    <span>➕</span>
+    <span class="cat-label-text">Adicionais avulsos</span>
+    <div class="cat-label-line"></div>
+  </div>
+  <div class="chips-grid">
+    <div class="chip">🍯 Pote extra de calda <span class="chip-price">R$ 6,00</span></div>
+    <div class="chip">🍌 Banana extra <span class="chip-price">R$ 3,00</span></div>
+    <div class="chip">🍓 Morangos extra <span class="chip-price">R$ 5,00</span></div>
+    <div class="chip">🍦 Chantilly extra <span class="chip-price">R$ 4,00</span></div>
+    <div class="chip">🍪 Oreo extra <span class="chip-price">R$ 5,00</span></div>
+    <div class="chip">🍭 Stikadinho extra <span class="chip-price">R$ 5,00</span></div>
+    <div class="chip">🍫 Kit Kat extra <span class="chip-price">R$ 5,00</span></div>
+  </div>
+</div>
+
+
+<!-- ══════════ PEDIDOS ══════════ -->
+<div class="section" id="pedidos">
+  <div class="section-header">
+    <div class="section-eyebrow">Como funciona</div>
+    <h2 class="section-title">Fazer um <span>Pedido</span> 📲</h2>
+    <p class="section-desc">Simples, rápido e muito gostoso.</p>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div>
+        <div class="step-title">Escolha seus produtos</div>
+        <div class="step-desc">Navegue nos sabores, escolha o formato (Cup, Espetinho ou Box) e selecione suas caldas e toppings favoritos.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div>
+        <div class="step-title">Mande mensagem</div>
+        <div class="step-desc">Pelo Direct do Instagram <a href="https://www.instagram.com/querohmypancake/" target ="_blank" style="text-decoration: none; color: black;">@querohmypancake</a> ou WhatsApp. Informe sabor, formato, calda e toppings desejados.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div>
+        <div class="step-title">Confirme pelo Pix</div>
+        <div class="step-desc">Pagamento via Pix ou cartão. O pedido entra em produção após a confirmação do pagamento.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div>
+        <div class="step-title">Receba fresquinho 🥞</div>
+        <div class="step-desc">Delivery ou retirada. Feito na hora para você receber tudo quentinho e gostoso.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-bar">
+    <div class="info-item">💳 <div><strong>Pagamento</strong>Pix · Cartão</div></div>
+    <div class="info-item">📦 <div><strong>Entrega</strong>Delivery & Retirada</div></div>
+    <div class="info-item">📲 <div><strong>Pedidos</strong>Direct · WhatsApp</div></div>
+  </div>
+
+  <div class="cta-block">
+    <h3>Ficou com fome? 🤤</h3>
+    <p>Estamos prontos para preparar o seu pedido agora!</p>
+    <div class="cta-btn"><a href="https://www.instagram.com/querohmypancake/" target ="_blank" style="text-decoration: none; color: inherit;">📲 @querohmypancake</a></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-logo">Oh My Pancake! 🥞</div>
+  <div class="footer-handle">
+    <a href="https://www.instagram.com/querohmypancake/" target ="_blank" style="text-decoration: none; color: inherit;">@querohmypancake</a></div>
+  <div class="footer-tag">mini american pancakes · feito com amor </div>
+</div>
+
+<a
+        href="https://wa.me/5551999311810?text=Gostaria%20de%20fazer%20um%20pedido!"
+        class="whatsapp-float"
+        target="_blank"
+>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+</a>
+
+
+<script>
+  function show(id, btn) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+</script>
+</body>
+</html>
